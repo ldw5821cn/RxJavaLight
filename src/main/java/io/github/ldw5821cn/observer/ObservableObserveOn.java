@@ -17,7 +17,6 @@ public class ObservableObserveOn<T> extends Observable<T> {
     @Override
     protected void subscribeActual(Observer<T> observer) {
         ObserverOnObserver observeOn = new ObserverOnObserver(observer);
-        observer.onSubscribe();
         source.subscribe(observeOn);
         scheduler.scheduleDirect(observeOn);
     }
@@ -57,6 +56,9 @@ public class ObservableObserveOn<T> extends Observable<T> {
 
         @Override
         public void onSubscribe() {
+            if(!isSubscribed.compareAndSet(false,true)){
+                return;
+            }
             actual.onSubscribe();
         }
 
